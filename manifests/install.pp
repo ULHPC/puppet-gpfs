@@ -44,7 +44,7 @@ define gpfs::install (
   String $repo_location = undef
   ) {
 
-  require gpfs::params
+  require ::gpfs::params
 
   if ! ($package_name or $repo_location){
     fail('you must define a package name and a repository location !')

@@ -16,7 +16,7 @@
 class gpfs::common {
 
   # Load the variables used in this module. Check the params.pp file
-  require gpfs::params
+  require ::gpfs::params
 
   $gpfs_package_version = $::operatingsystem ? {
     /(?i-mx:ubuntu|debian)/        => regsubst($gpfs::gpfs_version, '^(.*)\.(\d+)$','\1_\2'),
@@ -58,7 +58,7 @@ class gpfs::common {
     owner   => $gpfs::params::mountoptions_file_owner,
     group   => $gpfs::params::mountoptions_file_group,
     mode    => $gpfs::params::mountoptions_file_mode,
-    content => "ro",
+    content => 'ro',
     require => Gpfs::Install[$packages],
   }
 
@@ -67,14 +67,14 @@ class gpfs::common {
     owner   => $gpfs::params::bash_profile_d_file_owner,
     group   => $gpfs::params::bash_profile_d_file_group,
     mode    => $gpfs::params::bash_profile_d_file_mode,
-    content => "export PATH=\$PATH:${gpfs::params::gpfs_base_directory}/bin\n"
+    content => "export PATH=\$PATH:${gpfs::params::gpfs_base_directory}/bin\n",
   }
 
   ssh_authorized_key { $gpfs::server_sshkey_comment:
     ensure => $gpfs::ensure,
     user   => 'root',
     type   => $gpfs::server_sshkey_type,
-    key    => $gpfs::server_sshkey
+    key    => $gpfs::server_sshkey,
   }
 
 
@@ -86,24 +86,24 @@ class gpfs::common {
     Package[$gpfs::params::extra_packages] -> Gpfs::Install[$packages]
     exec { 'gpfs-installer-exec':
       command => "${gpfs::params::installer_path}/${installer_name} --text-only --silent",
-      unless  => "/bin/test -d ${gpfs::params::gpfs_base_directory}/${gpfs::gpfs_version}"
+      unless  => "/bin/test -d ${gpfs::params::gpfs_base_directory}/${gpfs::gpfs_version}",
     }
 
     exec { 'compil-step-1':
-      command => "/usr/bin/make LINUX_DISTRIBUTION=REDHAT_AS_LINUX Autoconfig",
-      cwd     => "/usr/lpp/mmfs/src",
+      command => '/usr/bin/make LINUX_DISTRIBUTION=REDHAT_AS_LINUX Autoconfig',
+      cwd     => '/usr/lpp/mmfs/src',
       unless  => "/bin/test -e /usr/lib/modules/${::kernelrelease}/extra/mmfslinux.ko",
       require => Gpfs::Install[$packages],
-    } ->
-    exec { 'compil-step-2':
-      command => "/usr/bin/make World",
-      cwd     => "/usr/lpp/mmfs/src",
+    }
+    -> exec { 'compil-step-2':
+      command => '/usr/bin/make World',
+      cwd     => '/usr/lpp/mmfs/src',
       unless  => "/bin/test -e /usr/lib/modules/${::kernelrelease}/extra/mmfslinux.ko",
       require => Gpfs::Install[$packages],
-    } ->
-    exec { 'compil-step-3':
-      command => "/usr/bin/make InstallImages",
-      cwd     => "/usr/lpp/mmfs/src",
+    }
+    -> exec { 'compil-step-3':
+      command => '/usr/bin/make InstallImages',
+      cwd     => '/usr/lpp/mmfs/src',
       unless  => "/bin/test -e /usr/lib/modules/${::kernelrelease}/extra/mmfslinux.ko",
       require => Gpfs::Install[$packages],
     }
@@ -118,11 +118,11 @@ class gpfs::common {
     Gpfs::Install[$packages] -> Package[$gpfs::params::extra_packages]
     exec { 'gpfs-installer-exec':
       command => "${gpfs::params::installer_path}/${installer_name} --remove",
-      onlyif  => "/bin/test -d ${gpfs::params::gpfs_base_directory}/src"
-    } ->
-    exec { 'gpfs-removal':
+      onlyif  => "/bin/test -d ${gpfs::params::gpfs_base_directory}/src",
+    }
+    -> exec { 'gpfs-removal':
       command => "/usr/bin/rm -rf ${gpfs::params::gpfs_base_directory}",
-      onlyif  => "/bin/test -d ${gpfs::params::gpfs_base_directory}"
+      onlyif  => "/bin/test -d ${gpfs::params::gpfs_base_directory}",
     }
 
 

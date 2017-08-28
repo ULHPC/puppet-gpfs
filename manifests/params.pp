@@ -55,7 +55,7 @@ class gpfs::params {
   }
 
   $gpfs_base_directory = $::operatingsystem ? {
-    default => "/usr/lpp/mmfs",
+    default => '/usr/lpp/mmfs',
   }
 
   $mountoptions_file = $::operatingsystem ? {

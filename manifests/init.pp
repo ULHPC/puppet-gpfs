@@ -75,14 +75,14 @@
 # [Remember: No empty lines between comments and class definition]
 #
 class gpfs(
+    String  $server_sshkey_type,
+    String  $server_sshkey_comment,
+    String  $server_sshkey,
     String  $ensure         = $gpfs::params::ensure,
     String  $gpfs_version   = $gpfs::params::gpfs_version,
     String  $gskit_version  = $gpfs::params::gskit_version,
     String  $installer_path = $gpfs::params::installer_path,
-    Boolean $read_only      = $gpfs::params::read_only,
-    String  $server_sshkey_type,
-    String  $server_sshkey_comment,
-    String  $server_sshkey
+    Boolean $read_only      = $gpfs::params::read_only
 )
 inherits gpfs::params
 {
