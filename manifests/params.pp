@@ -42,7 +42,7 @@ class gpfs::params {
 
   $extra_packages = $::operatingsystem ? {
     /(?i-mx:ubuntu|debian)/        => 'build-essential',
-    /(?i-mx:centos|fedora|redhat)/ => ['ksh', 'net-tools', 'm4', 'gcc-c++'],
+    /(?i-mx:centos|fedora|redhat)/ => ['ksh', 'm4', 'gcc-c++'], # net-tools (already installed)
     default => []
   }
 
