@@ -1,5 +1,5 @@
 ################################################################################
-# Time-stamp: <Wed 2017-08-23 15:14 svarrette>
+# Time-stamp: <Mon 2017-08-28 11:48:42 hcartiaux>
 #
 # File::      <tt>common.pp</tt>
 # Author::    UL HPC Team (hpc-sysadmins@uni.lu)
@@ -18,149 +18,116 @@ class gpfs::common {
   # Load the variables used in this module. Check the params.pp file
   require gpfs::params
 
-  # Order
-  if ($gpfs::ensure == 'present') {
-    Group['gpfs'] -> User['gpfs'] -> Package['gpfs']
+  $gpfs_package_version = $::operatingsystem ? {
+    /(?i-mx:ubuntu|debian)/        => regsubst($gpfs::gpfs_version, '^(.*)\.(\d+)$','\1_\2'),
+    /(?i-mx:centos|fedora|redhat)/ => regsubst($gpfs::gpfs_version, '^(.*)\.(\d+)$','\1-\2'),
   }
-  else {
-    Package['gpfs'] -> User['gpfs'] -> Group['gpfs']
+  $installer_name = "Spectrum_Scale_Protocols_Standard-${gpfs::gpfs_version}-x86_64-Linux-install"
+  $packages = $::operatingsystem ? {
+    /(?i-mx:ubuntu|debian)/        => [
+                                        "gpfs.base_${gpfs_package_version}_amd64.deb",
+                                        "gpfs.docs_${gpfs_package_version}_all.deb",
+                                        "gpfs.gpl_${gpfs_package_version}_all.deb",
+                                        "gpfs.msg.en-us_${gpfs_package_version}_all.deb",
+                                        "gpfs.ext_${gpfs_package_version}_amd64.deb",
+                                        "gpfs.gskit_${gpfs::gskit_version}_amd64.deb",
+                                      ],
+    /(?i-mx:centos|fedora|redhat)/ => [
+                                        "gpfs.base-${gpfs_package_version}.x86_64.rpm",
+                                        "gpfs.docs-${gpfs_package_version}.noarch.rpm",
+                                        "gpfs.gpl-${gpfs_package_version}.noarch.rpm",
+                                        "gpfs.msg.en_US-${gpfs_package_version}.noarch.rpm",
+                                        "gpfs.ext-${gpfs_package_version}.x86_64.rpm",
+                                        "gpfs.gskit-${gpfs::gskit_version}.x86_64.rpm",
+                                      ]
   }
+  $package_directory = "${gpfs::params::gpfs_base_directory}/${gpfs::gpfs_version}/gpfs_rpms/"
 
-  # Prepare the user and group
-  group { 'gpfs':
-    ensure => $gpfs::ensure,
-    name   => gpfs::params::group,
-    gid    => gpfs::params::gid,
-  }
-  user { 'munge':
-    ensure     => $gpfs::ensure,
-    name       => $gpfs::params::username,
-    uid        => $gpfs::params::gid,
-    gid        => $gpfs::params::gid,
-    comment    => $gpfs::params::comment,
-    home       => $gpfs::params::home,
-    managehome => true,
-    system     => true,
-    shell      => $gpfs::params::shell,
-  }
 
-  package { 'gpfs':
-    name    => "${gpfs::params::packagename}",
-    ensure  => "${gpfs::ensure}",
-  }
   package { $gpfs::params::extra_packages:
-    ensure => 'present'
+    ensure => $gpfs::ensure,
   }
+
+  if ($gpfs::read_only and $gpfs::ensure == 'present') {
+    $mountoptions_file_ensure = 'present'
+  } else {
+    $mountoptions_file_ensure = 'absent'
+  }
+  file { $gpfs::params::mountoptions_file:
+    ensure  => $mountoptions_file_ensure,
+    owner   => $gpfs::params::mountoptions_file_owner,
+    group   => $gpfs::params::mountoptions_file_group,
+    mode    => $gpfs::params::mountoptions_file_mode,
+    content => "ro",
+    require => Gpfs::Install[$packages],
+  }
+
+  file { $gpfs::params::bash_profile_d_file:
+    ensure  => $gpfs::ensure,
+    owner   => $gpfs::params::bash_profile_d_file_owner,
+    group   => $gpfs::params::bash_profile_d_file_group,
+    mode    => $gpfs::params::bash_profile_d_file_mode,
+    content => "export PATH=\$PATH:${gpfs::params::gpfs_base_directory}/bin\n"
+  }
+
+  ssh_authorized_key { $gpfs::server_sshkey_comment:
+    ensure => $gpfs::ensure,
+    user   => 'root',
+    type   => $gpfs::server_sshkey_type,
+    key    => $gpfs::server_sshkey
+  }
+
 
   if $gpfs::ensure == 'present' {
-
-    # Prepare the log directory
-    file { "${gpfs::params::logdir}":
-      ensure => 'directory',
-      owner  => "${gpfs::params::logdir_owner}",
-      group  => "${gpfs::params::logdir_group}",
-      mode   => "${gpfs::params::logdir_mode}",
-      require => Package['gpfs'],
+    gpfs::install { $packages:
+      repo_location => $package_directory,
     }
 
-    # Configuration file
-    file { "${gpfs::params::configdir}":
-      ensure => 'directory',
-      owner  => "${gpfs::params::configdir_owner}",
-      group  => "${gpfs::params::configdir_group}",
-      mode   => "${gpfs::params::configdir_mode}",
-      require => Package['gpfs'],
-    }
-    # Regular version using file resource
-    file { 'gpfs.conf':
-      ensure  => "${gpfs::ensure}",
-      path    => "${gpfs::params::configfile}",
-      owner   => "${gpfs::params::configfile_owner}",
-      group   => "${gpfs::params::configfile_group}",
-      mode    => "${gpfs::params::configfile_mode}",
-      #content => template("gpfs/gpfsconf.erb"),
-      #source => "puppet:///modules/gpfs/gpfs.conf",
-      #notify  => Service['gpfs'],
-      require => [
-        #File["${gpfs::params::configdir}"],
-        Package['gpfs']
-      ],
+    Package[$gpfs::params::extra_packages] -> Gpfs::Install[$packages]
+    exec { 'gpfs-installer-exec':
+      command => "${gpfs::params::installer_path}/${installer_name} --text-only --silent",
+      unless  => "/bin/test -d ${gpfs::params::gpfs_base_directory}/${gpfs::gpfs_version}"
     }
 
-    # # Concat version -- see https://forge.puppetlabs.com/puppetlabs/concat
-    # include concat::setup
-    # concat { "${gpfs::params::configfile}":
-      #     warn    => false,
-      #     owner   => "${gpfs::params::configfile_owner}",
-      #     group   => "${gpfs::params::configfile_group}",
-      #     mode    => "${gpfs::params::configfile_mode}",
-      #     #notify  => Service['gpfs'],
-      #     require => Package['gpfs'],
-      # }
-    # # Populate the configuration file
-    # concat::fragment { "${gpfs::params::configfile}_header":
-      #     ensure  => "${gpfs::ensure}",
-      #     target  => "${gpfs::params::configfile}",
-      #     content => template("gpfs/gpfs_header.conf.erb"),
-      #     #source => "puppet:///modules/gpfs/gpfs_header.conf",
-      #     order   => '01',
-      # }
-    # concat::fragment { "${gpfs::params::configfile}_footer":
-      #     ensure  => "${gpfs::ensure}",
-      #     target  => "${gpfs::params::configfile}",
-      #     content => template("gpfs/gpfs_footer.conf.erb"),
-      #     #source => "puppet:///modules/gpfs/gpfs_footer.conf",
-      #     order   => '99',
-      # }
-
-    # PID file directory
-    file { "${gpfs::params::piddir}":
-      ensure  => 'directory',
-      owner   => "${gpfs::params::piddir_user}",
-      group   => "${gpfs::params::piddir_group}",
-      mode    => "${gpfs::params::piddir_mode}",
+    exec { 'compil-step-1':
+      command => "/usr/bin/make LINUX_DISTRIBUTION=REDHAT_AS_LINUX Autoconfig",
+      cwd     => "/usr/lpp/mmfs/src",
+      unless  => "/bin/test -e /usr/lib/modules/${::kernelrelease}/extra/mmfslinux.ko",
+      require => Gpfs::Install[$packages],
+    } ->
+    exec { 'compil-step-2':
+      command => "/usr/bin/make World",
+      cwd     => "/usr/lpp/mmfs/src",
+      unless  => "/bin/test -e /usr/lib/modules/${::kernelrelease}/extra/mmfslinux.ko",
+      require => Gpfs::Install[$packages],
+    } ->
+    exec { 'compil-step-3':
+      command => "/usr/bin/make InstallImages",
+      cwd     => "/usr/lpp/mmfs/src",
+      unless  => "/bin/test -e /usr/lib/modules/${::kernelrelease}/extra/mmfslinux.ko",
+      require => Gpfs::Install[$packages],
     }
+
+
   }
   else
   {
-    # Here $gpfs::ensure is 'absent'
-    file {
-      [
-        $gpfs::params::configdir,
-        $gpfs::params::logdir,
-        $gpfs::params::piddir,
-      ]:
-        ensure => $gpfs::ensure,
-        force  => true,
+    gpfs::install { reverse($packages):
+      repo_location => $package_directory,
     }
-  }
-    # Sysconfig / default daemon directory
-    file { "${gpfs::params::default_sysconfig}":
-      ensure  => $gpfs::ensure,
-      owner   => $gpfs::params::configfile_owner,
-      group   => $gpfs::params::configfile_group,
-      mode    => '0755',
-      #content => template("gpfs/default/gpfs.erb"),
-      #source => "puppet:///modules/gpfs/default/gpfs.conf",
-      notify  =>  Service['gpfs'],
-      require =>  Package['gpfs']
+    Gpfs::Install[$packages] -> Package[$gpfs::params::extra_packages]
+    exec { 'gpfs-installer-exec':
+      command => "${gpfs::params::installer_path}/${installer_name} --remove",
+      onlyif  => "/bin/test -d ${gpfs::params::gpfs_base_directory}/src"
+    } ->
+    exec { 'gpfs-removal':
+      command => "/usr/bin/rm -rf ${gpfs::params::gpfs_base_directory}",
+      onlyif  => "/bin/test -d ${gpfs::params::gpfs_base_directory}"
     }
 
-  service { 'gpfs':
-    ensure     => ($gpfs::ensure == 'present'),
-    name       => "${gpfs::params::servicename}",
-    enable     => ($gpfs::ensure == 'present'),
-    pattern    => "${gpfs::params::processname}",
-    hasrestart => "${gpfs::params::hasrestart}",
-    hasstatus  => "${gpfs::params::hasstatus}",
-    require    => [
-      Package['gpfs'],
-      File[$gpfs::params::configdir],
-      File[$gpfs::params::logdir],
-      File[$gpfs::params::piddir],
-      File[$gpfs::params::configfile_init]
-    ],
-    subscribe  => File['gpfs.conf'],
+
   }
 
 }
+
+

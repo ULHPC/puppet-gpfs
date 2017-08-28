@@ -1,5 +1,5 @@
 ################################################################################
-# Time-stamp: <Wed 2017-08-23 14:43 svarrette>
+# Time-stamp: <Mon 2017-08-28 14:29:21 hcartiaux>
 #
 # File::      <tt>common/redhat.pp</tt>
 # Author::    UL HPC Team (hpc-sysadmins@uni.lu)

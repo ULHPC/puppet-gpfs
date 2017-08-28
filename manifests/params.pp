@@ -1,5 +1,5 @@
 ################################################################################
-# Time-stamp: <Wed 2017-08-23 15:15 svarrette>
+# Time-stamp: <Mon 2017-08-28 11:49:06 hcartiaux>
 #
 # File::      <tt>params.pp</tt>
 # Author::    UL HPC Team (hpc-sysadmins@uni.lu)
@@ -29,122 +29,59 @@ class gpfs::params {
 
   # ensure the presence (or absence) of gpfs
   $ensure = 'present'
-
-  # The Protocol used. Used by monitor and firewall class. Default is 'tcp'
-  $protocol = 'tcp'
-
-  # The port number. Used by monitor and firewall class. The default is 22.
-  $port = 22
-
-  # example of an array/hash variable
-  $array_variable = []
-  $hash_variable  = {}
-
-  # undef variable
-  $undefvar = undef
+  $read_only = false
 
   ###########################################
   # gpfs system configs
   ###########################################
-  # gpfs user / group identifiers
-  $username = 'gpfs'
-  $uid      = 14144
-  $group    = $username
-  $gid      = $uid
-  $home     = "/var/lib/${username}"
-  $comment  = 'Gpfs User'
-  $shell    = '/sbin/nologin' # or '/bin/bash'
 
   # gpfs packages
-  $packagename = $::operatingsystem ? {
-    default => 'gpfs',
+  $installer_path = $::operatingsystem ? {
+    default => '/root/GPFS',
   }
+
   $extra_packages = $::operatingsystem ? {
-    /(?i-mx:ubuntu|debian)/        => [],
-    /(?i-mx:centos|fedora|redhat)/ => [],
+    /(?i-mx:ubuntu|debian)/        => 'build-essential',
+    /(?i-mx:centos|fedora|redhat)/ => ['ksh', 'net-tools', 'm4', 'gcc-c++'],
     default => []
   }
 
-  # Log directory
-  $logdir = $::operatingsystem ? {
-    default => '/var/log/gpfs'
-  }
-  $logdir_mode = $::operatingsystem ? {
-    default => '750',
-  }
-  $logdir_owner = $::operatingsystem ? {
-    default => 'root',
-  }
-  $logdir_group = $::operatingsystem ? {
-    default => 'adm',
+  $gpfs_version = $::operatingsystem ? {
+    default => '4.2.2.3',
   }
 
-  # PID for daemons
-  $piddir = $::operatingsystem ? {
-    default => "/var/run/gpfs",
-  }
-  $piddir_mode = $::operatingsystem ? {
-    default => '750',
-  }
-  $piddir_owner = $::operatingsystem ? {
-    default => 'gpfs',
-  }
-  $piddir_group = $::operatingsystem ? {
-    default => 'adm',
-  }
-  $pidfile = $::operatingsystem ? {
-    default => '/var/run/gpfs/gpfs.pid'
+  $gskit_version = $::operatingsystem ? {
+    default => '8.0.50-57',
   }
 
-  # gpfs associated services
-  $servicename = $::operatingsystem ? {
-    /(?i-mx:ubuntu|debian)/ => 'gpfs',
-    default                 => 'gpfs'
-  }
-  # used for pattern in a service ressource
-  $processname = $::operatingsystem ? {
-    /(?i-mx:ubuntu|debian)/ => 'gpfs',
-    default                 => 'gpfs'
-  }
-  $hasstatus = $::operatingsystem ? {
-    /(?i-mx:ubuntu|debian)/        => false,
-    /(?i-mx:centos|fedora|redhat)/ => true,
-    default => true,
-  }
-  $hasrestart = $::operatingsystem ? {
-    default => true,
+  $gpfs_base_directory = $::operatingsystem ? {
+    default => "/usr/lpp/mmfs",
   }
 
-  # Configuration directory & file
-  $configdir = $::operatingsystem ? {
-    default => "/etc/gpfs",
+  $mountoptions_file = $::operatingsystem ? {
+    default => '/var/mmfs/etc/localMountOptions'
   }
-  $configdir_mode = $::operatingsystem ? {
-    default => '0755',
+  $mountoptions_file_owner = $::operatingsystem ? {
+    default => 'root'
   }
-  $configdir_owner = $::operatingsystem ? {
-    default => 'root',
+  $mountoptions_file_group = $::operatingsystem ? {
+    default => 'root'
   }
-  $configdir_group = $::operatingsystem ? {
-    default => 'root',
-  }
-
-  $configfile = $::operatingsystem ? {
-    default => '/etc/gpfs.conf',
-  }
-  $configfile_mode = $::operatingsystem ? {
-    default => '0600',
-  }
-  $configfile_owner = $::operatingsystem ? {
-    default => 'root',
-  }
-  $configfile_group = $::operatingsystem ? {
-    default => 'root',
+  $mountoptions_file_mode = $::operatingsystem ? {
+    default => '0755'
   }
 
-  $default_sysconfig = $::operatingsystem ? {
-    /(?i-mx:ubuntu|debian)/ => '/etc/default/gpfs',
-    default                 => '/etc/sysconfig/gpfs'
+  $bash_profile_d_file = $::operatingsystem ? {
+    default => '/etc/profile.d/gpfs.sh'
+  }
+  $bash_profile_d_file_owner = $::operatingsystem ? {
+    default => 'root'
+  }
+  $bash_profile_d_file_group = $::operatingsystem ? {
+    default => 'root'
+  }
+  $bash_profile_d_file_mode = $::operatingsystem ? {
+    default => '0755'
   }
 
 }
