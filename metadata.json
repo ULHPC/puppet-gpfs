@@ -1,0 +1,42 @@
+{
+  "name": "ULHPC-gpfs",
+  "version": "0.0.1",
+  "author": "UL HPC Team",
+  "mail": "hpc-sysadmins@uni.lu",
+  "summary": "Configure and manage IBM GPFS/Spectrumscale clients",
+  "description": "Configure and manage IBM GPFS/Spectrumscale clients",
+  "license": "Apache-2.0",
+  "source": "https://github.com/ULHPC/puppet-gpfs",
+  "docs_project": "ulhpc-puppet-gpfs",
+  "project_page": "https://github.com/ULHPC/puppet-gpfs",
+  "issues_url": "https://github.com/ULHPC/puppet-gpfs/issues",
+  "forge_url": "https://forge.puppetlabs.com/ULHPC/gpfs",
+  "dependencies": [
+    {
+      "name": "puppetlabs-stdlib",
+      "version_requirement": ">=4.2.2 <5.0.0"
+    }
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": [
+        "7",
+        "8"
+      ]
+    }
+  ],
+  "tags": ["gpfs", "spectrumscale", "ibm"]
+}
