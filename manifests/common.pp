@@ -93,18 +93,21 @@ class gpfs::common {
       command => '/usr/bin/make LINUX_DISTRIBUTION=REDHAT_AS_LINUX Autoconfig',
       cwd     => '/usr/lpp/mmfs/src',
       unless  => "/bin/test -e /usr/lib/modules/${::kernelrelease}/extra/mmfslinux.ko",
+      path    => '/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin',
       require => Gpfs::Install[$packages],
     }
     -> exec { 'compil-step-2':
       command => '/usr/bin/make World',
       cwd     => '/usr/lpp/mmfs/src',
       unless  => "/bin/test -e /usr/lib/modules/${::kernelrelease}/extra/mmfslinux.ko",
+      path    => '/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin',
       require => Gpfs::Install[$packages],
     }
     -> exec { 'compil-step-3':
       command => '/usr/bin/make InstallImages',
       cwd     => '/usr/lpp/mmfs/src',
       unless  => "/bin/test -e /usr/lib/modules/${::kernelrelease}/extra/mmfslinux.ko",
+      path    => '/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin',
       require => Gpfs::Install[$packages],
     }
 
