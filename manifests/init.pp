@@ -21,7 +21,7 @@
 # @param gskit_version [String] Default: '8.0.50-57'.
 #          Specify the gskit version version
 #
-# @param installer_path [String] Default: '/usr/lpp/mmfs'.
+# @param installer_path [String] Default: '/root/GPFS'.
 #          Path of the directory where the installer is located
 #
 # @param read_only [Boolean] Default: false.
