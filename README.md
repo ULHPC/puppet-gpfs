@@ -2,9 +2,9 @@
 
 # Gpfs Puppet Module 
 
-[![Puppet Forge](http://img.shields.io/puppetforge/v/gpfs.svg)](https://forge.puppetlabs.com/ULHPC/gpfs)
+[![Puppet Forge](http://img.shields.io/puppetforge/v/ULHPC/gpfs.svg)](https://forge.puppetlabs.com/ULHPC/gpfs)
 [![License](http://img.shields.io/:license-Apache2.0-blue.svg)](LICENSE)
-![Supported Platforms](http://img.shields.io/badge/platform-debian-lightgrey.svg)
+![Supported Platforms](http://img.shields.io/badge/platform-redhat|centos|debian-lightgrey.svg)
 [![Documentation Status](https://readthedocs.org/projects/ulhpc-puppet-gpfs/badge/?version=latest)](https://readthedocs.org/projects/ulhpc-puppet-gpfs/?badge=latest)
 
 Configure and manage IBM GPFS/Spectrumscale clients
@@ -59,17 +59,17 @@ You can of course configure the gpfs module in your `Puppetfile` to make it avai
 [r10k](https://github.com/adrienthebo/r10k) by adding the following entry:
 
      # Modules from the Puppet Forge
-     mod "gpfs"
+     mod "ULHPC-gpfs"
 
 or, if you prefer to work on the git version: 
 
-     mod "gpfs", 
+     mod "ULHPC-gpfs", 
          :git => 'https://github.com/ULHPC/puppet-gpfs',
          :ref => 'production' 
 
 ## Issues / Feature request
 
-You can submit bug / issues / feature request using the [gpfs Puppet Module Tracker](https://github.com/ULHPC/puppet-gpfs/issues). 
+You can submit bug / issues / feature request using the [ULHPC-gpfs Puppet Module Tracker](https://github.com/ULHPC/puppet-gpfs/issues). 
 
 ## Developments / Contributing to the code 
 
@@ -87,7 +87,7 @@ See [`docs/vagrant.md`](vagrant.md) for more details.
 
 ## Online Documentation
 
-[Read the Docs](https://readthedocs.org/) aka RTFD hosts documentation for the open source community and the [gpfs](https://github.com/ULHPC/puppet-gpfs) puppet module has its documentation (see the `docs/` directly) hosted on [readthedocs](http://ulhpc-puppet-gpfs.rtfd.org).
+[Read the Docs](https://readthedocs.org/) aka RTFD hosts documentation for the open source community and the [ULHPC-gpfs](https://github.com/ULHPC/puppet-gpfs) puppet module has its documentation (see the `docs/` directly) hosted on [readthedocs](http://ulhpc-puppet-gpfs.rtfd.org).
 
 See [`docs/rtfd.md`](rtfd.md) for more details.
 
