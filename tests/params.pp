@@ -13,9 +13,9 @@
 #
 #
 
-include 'gpfs::params'
+include '::gpfs::params'
 
-$names = ["ensure", "protocol", "port", "packagename"]
+$names = ['ensure', 'protocol', 'port', 'packagename']
 
 notice("gpfs::params::ensure = ${gpfs::params::ensure}")
 notice("gpfs::params::protocol = ${gpfs::params::protocol}")

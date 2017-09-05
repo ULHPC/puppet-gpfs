@@ -85,7 +85,7 @@ class gpfs::common {
 
     Package[$gpfs::params::extra_packages] -> Gpfs::Install[$packages]
     exec { 'gpfs-installer-exec':
-      command => "${gpfs::params::installer_path}/${installer_name} --text-only --silent",
+      command => "${gpfs::installer_path}/${installer_name} --text-only --silent",
       unless  => "/bin/test -d ${gpfs::params::gpfs_base_directory}/${gpfs::gpfs_version}",
     }
 
@@ -120,7 +120,7 @@ class gpfs::common {
     }
     Gpfs::Install[$packages] -> Package[$gpfs::params::extra_packages]
     exec { 'gpfs-installer-exec':
-      command => "${gpfs::params::installer_path}/${installer_name} --remove",
+      command => "${gpfs::installer_path}/${installer_name} --remove",
       onlyif  => "/bin/test -d ${gpfs::params::gpfs_base_directory}/src",
     }
     -> exec { 'gpfs-removal':
@@ -132,5 +132,4 @@ class gpfs::common {
   }
 
 }
-
 
