@@ -16,13 +16,13 @@
 #      sudo puppet apply -t /vagrant/tests/init.pp
 #
 node default {
-    class { ::gpfs:
+    class { '::gpfs':
       ensure                => present,
       gpfs_version          => '4.2.3.1',
       gskit_version         => '8.0.50-75',
       read_only             => true,
       server_sshkey_type    => 'ssh-rsa',
       server_sshkey_comment => 'root@gs7k-1-1',
-      server_sshkey         => 'AAAAB3NzaC1yc2EAAAADAQABAAABAQCrfR6Xw/axFVtUfPucSHK0S1TE+1CUvfCjm2cQm0PIBSNYMrk/h40eoHYeVfDASyAJLKYivCM97wN7gXkkqHVipftZAqWWseVUH/l5zLeoPIowK3I5LL8owrxwosICw/9PLJG3SRsZiKxJHB+QEBRDhUAO8IlD2B5dB9z0oTuvc637f/73BXv1WObCn66UvY1oJ5RZra3QRrgvoOqGXTKhmcwjR6sBNw5D3jqueh48NMVjcSidKLvX7ThW9BpX+Kmm6cgsIsQteyOErqHrwy+T0r5IUzsg3D5j4z6uIRdH+fMa+1n82P/7kaYsfsNXNKQwE947n9SWzEbQG2/jJMtv'
+      server_sshkey         => 'AAAAB3NzaC1yc2EAAAADAQABAAABAQCrfR6Xw/axFVtUfPucSHK0S1TE+1CUvfCjm2cQm0PIBSNYMrk/h40eoHYeVfDASyAJLKYivCM97wN7gXkkqHVipftZAqWWseVUH/l5zLeoPIowK3I5LL8owrxwosICw/9PLJG3SRsZiKxJHB+QEBRDhUAO8IlD2B5dB9z0oTuvc637f/73BXv1WObCn66UvY1oJ5RZra3QRrgvoOqGXTKhmcwjR6sBNw5D3jqueh48NMVjcSidKLvX7ThW9BpX+Kmm6cgsIsQteyOErqHrwy+T0r5IUzsg3D5j4z6uIRdH+fMa+1n82P/7kaYsfsNXNKQwE947n9SWzEbQG2/jJMtv',
     }
 }
