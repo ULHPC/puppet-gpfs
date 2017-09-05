@@ -1,10 +1,10 @@
 -*- mode: markdown; mode: visual-line;  -*-
 
-# gpfs Puppet Module
+# ULHPC-gpfs Puppet Module
 
-[![Puppet Forge](http://img.shields.io/puppetforge/v/gpfs.svg)](https://forge.puppetlabs.com/ULHPC/gpfs)
+[![Puppet Forge](http://img.shields.io/puppetforge/v/ULHPC/gpfs.svg)](https://forge.puppetlabs.com/ULHPC/gpfs)
 [![License](http://img.shields.io/:license-Apache2.0-blue.svg)](LICENSE)
-![Supported Platforms](http://img.shields.io/badge/platform-debian-lightgrey.svg)
+![Supported Platforms](http://img.shields.io/badge/platform-redhat|centos|debian-lightgrey.svg)
 [![Documentation Status](https://readthedocs.org/projects/ulhpc-puppet-gpfs/badge/?version=latest)](https://readthedocs.org/projects/ulhpc-puppet-gpfs/?badge=latest)
 [![By ULHPC](https://img.shields.io/badge/by-ULHPC-blue.svg)](http://hpc.uni.lu)
 
@@ -14,9 +14,9 @@
 
 
 -----------
-The [gpfs](https://github.com/ULHPC/puppet-gpfs) puppet module has been designed to configure and manage ibm gpfs/spectrumscale clients
+The [ULHPC-gpfs](https://github.com/ULHPC/puppet-gpfs) puppet module has been designed to configure and manage ibm gpfs/spectrumscale clients
 
-This is the main page of the documentation for this Puppet module, which is hosted and managed by [Read the Docs](http://gpfs.readthedocs.org/en/latest/).
+This is the main page of the documentation for this Puppet module, which is hosted and managed by [Read the Docs](http://ulhpc-gpfs.readthedocs.org/en/latest/).
 It proposes to detail the following elements:
 
 * An [Overview](overview.md) of the module is proposed, describing the puppet classes and/or definitions it implements.
