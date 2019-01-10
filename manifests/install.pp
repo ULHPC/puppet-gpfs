@@ -55,8 +55,14 @@ define gpfs::install (
     /(?i-mx:centos|fedora|redhat)/ => 'rpm',
   }
 
+  if ($gpfs::ensure == 'present') {
+    $package_ensure = 'latest'
+  } else {
+    $package_ensure = $gpfs::ensure
+  }
+
   package { regsubst($package_name, '^([^-]*).*$', '\1'):
-    ensure   => $gpfs::ensure,
+    ensure   => $package_ensure,
     provider => $package_provider,
     source   => "${repo_location}/${package_name}",
     require  => Exec['gpfs-installer-exec'];
